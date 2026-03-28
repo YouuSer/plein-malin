@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #f8f9fb;
+  --fg: #1a1a2e;
+  --surface: #ffffff;
+  --surface-secondary: #f1f3f8;
+  --border: #e2e5ed;
+  --border-hover: #c4c8d4;
+  --text-secondary: #5a5f72;
+  --text-tertiary: #8b90a0;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-soft: rgba(37, 99, 235, 0.08);
+  --price-low: #16a34a;
+  --price-low-soft: rgba(22, 163, 74, 0.1);
+  --price-mid: #f59e0b;
+  --price-mid-soft: rgba(245, 158, 11, 0.1);
+  --price-high: #ef4444;
+  --price-high-soft: rgba(239, 68, 68, 0.1);
+  --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.06);
+  --shadow-md: 0 4px 20px rgb(0 0 0 / 0.08);
+  --shadow-lg: 0 8px 40px rgb(0 0 0 / 0.12);
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+}
+
+[data-theme="dark"] {
+  --bg: #0f0f1a;
+  --fg: #f0f0f5;
+  --surface: #1a1a2e;
+  --surface-secondary: #252540;
+  --border: #2d2d4a;
+  --border-hover: #3d3d5c;
+  --text-secondary: #a0a3b5;
+  --text-tertiary: #6b6e82;
+  --accent: #3b82f6;
+  --accent-hover: #60a5fa;
+  --accent-soft: rgba(59, 130, 246, 0.12);
+  --price-low: #22c55e;
+  --price-low-soft: rgba(34, 197, 94, 0.15);
+  --price-mid: #fbbf24;
+  --price-mid-soft: rgba(251, 191, 36, 0.15);
+  --price-high: #f87171;
+  --price-high-soft: rgba(248, 113, 113, 0.15);
+  --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.2);
+  --shadow-md: 0 4px 20px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 8px 40px rgb(0 0 0 / 0.4);
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* MapLibre overrides */
+.maplibregl-map {
+  font-family: inherit;
+}
+
+.maplibregl-ctrl-attrib {
+  font-size: 10px !important;
+}
+
+/* Bottom sheet drag handle */
+.drag-handle::before {
+  content: "";
+  display: block;
+  width: 36px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border-hover);
+  margin: 8px auto;
+}
+
+/* Price tag pulse animation */
+@keyframes price-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.price-pulse {
+  animation: price-pulse 2s ease-in-out infinite;
+}
+
+/* Smooth bottom sheet transitions */
+.bottom-sheet {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
