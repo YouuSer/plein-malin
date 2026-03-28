@@ -1,10 +1,10 @@
 export const FUEL_TYPES = {
-  e10: { label: "E10", color: "#16a34a", shortLabel: "E10" },
-  sp95: { label: "SP95", color: "#2563eb", shortLabel: "95" },
-  sp98: { label: "SP98", color: "#7c3aed", shortLabel: "98" },
-  gazole: { label: "Gazole", color: "#1a1a2e", shortLabel: "GOil" },
-  e85: { label: "E85", color: "#059669", shortLabel: "E85" },
-  gplc: { label: "GPLc", color: "#d97706", shortLabel: "GPL" },
+  e10: { label: "E10", color: "#0d9f6e", shortLabel: "E10" },
+  sp95: { label: "SP95", color: "#06b6d4", shortLabel: "95" },
+  sp98: { label: "SP98", color: "#8b5cf6", shortLabel: "98" },
+  gazole: { label: "Gazole", color: "#475569", shortLabel: "GOil" },
+  e85: { label: "E85", color: "#10b981", shortLabel: "E85" },
+  gplc: { label: "GPLc", color: "#f59e0b", shortLabel: "GPL" },
 } as const;
 
 export type FuelType = keyof typeof FUEL_TYPES;

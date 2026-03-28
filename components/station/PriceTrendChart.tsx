@@ -1,8 +1,8 @@
 "use client";
 
 import {
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -40,7 +40,7 @@ export function PriceTrendChart({ data, fuelType }: PriceTrendChartProps) {
   if (filtered.length < 2) {
     return (
       <div
-        className="text-center py-6 text-sm"
+        className="text-center py-8 text-sm font-medium"
         style={{ color: "var(--text-tertiary)" }}
       >
         Pas assez de donnees pour afficher les tendances
@@ -51,45 +51,60 @@ export function PriceTrendChart({ data, fuelType }: PriceTrendChartProps) {
   const fuel = FUEL_TYPES[fuelType];
 
   return (
-    <div className="h-48">
+    <div className="h-52 animate-fade-in">
       <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={filtered}>
-          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+        <AreaChart data={filtered}>
+          <defs>
+            <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#0d9f6e" stopOpacity={0.3} />
+              <stop offset="100%" stopColor="#0d9f6e" stopOpacity={0.02} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" strokeOpacity={0.5} />
           <XAxis
             dataKey="date"
-            tick={{ fontSize: 10, fill: "var(--text-tertiary)" }}
+            tick={{ fontSize: 11, fill: "var(--text-tertiary)", fontWeight: 500 }}
             tickLine={false}
-            axisLine={{ stroke: "var(--border)" }}
+            axisLine={false}
           />
           <YAxis
             domain={["auto", "auto"]}
-            tick={{ fontSize: 10, fill: "var(--text-tertiary)" }}
+            tick={{ fontSize: 11, fill: "var(--text-tertiary)", fontWeight: 500 }}
             tickLine={false}
-            axisLine={{ stroke: "var(--border)" }}
+            axisLine={false}
             tickFormatter={(v: number) => v.toFixed(3)}
-            width={50}
+            width={52}
           />
           <Tooltip
             contentStyle={{
-              background: "var(--surface)",
+              background: "var(--surface-glass-heavy)",
+              backdropFilter: "blur(12px)",
               border: "1px solid var(--border)",
-              borderRadius: "8px",
-              fontSize: "12px",
+              borderRadius: "12px",
+              fontSize: "13px",
+              fontWeight: 600,
+              boxShadow: "var(--shadow-lg)",
             }}
             formatter={(value) => [
               `${Number(value).toFixed(3)} EUR/L`,
               fuel.label,
             ]}
           />
-          <Line
+          <Area
             type="monotone"
             dataKey="price"
-            stroke={fuel.color}
-            strokeWidth={2}
+            stroke="#0d9f6e"
+            strokeWidth={2.5}
+            fill="url(#priceGradient)"
             dot={false}
-            activeDot={{ r: 4, fill: fuel.color }}
+            activeDot={{
+              r: 5,
+              fill: "#0d9f6e",
+              stroke: "white",
+              strokeWidth: 2.5,
+            }}
           />
-        </LineChart>
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   );
