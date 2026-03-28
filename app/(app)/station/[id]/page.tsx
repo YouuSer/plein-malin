@@ -12,6 +12,7 @@ import { CommunityReports } from "@/components/station/CommunityReports";
 import { ShareButton } from "@/components/share/ShareButton";
 import { StationJsonLd } from "@/components/station/StationJsonLd";
 import { useSession } from "@/lib/auth-client";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
 
 interface StationDetail {
   id: string;
@@ -39,6 +40,7 @@ export default function StationDetailPage() {
   const [alertPrice, setAlertPrice] = useState("");
   const [showFillUp, setShowFillUp] = useState(false);
   const { data: session } = useSession();
+  const { preferences, isHydrated: preferencesReady } = useUserPreferences();
 
   const toggleFavorite = useCallback(async () => {
     if (!session?.user) {
@@ -100,6 +102,13 @@ export default function StationDetailPage() {
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [id]);
+
+  useEffect(() => {
+    if (!preferencesReady || !station?.prices?.length) return;
+    if (station.prices.some((price) => price.fuelType === preferences.preferredFuel)) {
+      setSelectedFuel(preferences.preferredFuel);
+    }
+  }, [preferencesReady, preferences.preferredFuel, station]);
 
   if (loading) {
     return (
@@ -253,6 +262,7 @@ export default function StationDetailPage() {
                 <SavingsCalculator
                   stationPrice={mainPrice.price}
                   areaPrices={allPrices}
+                  tankSize={preferences.tankSizeL}
                 />
               </div>
             </div>

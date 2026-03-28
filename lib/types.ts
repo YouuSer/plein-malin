@@ -41,3 +41,12 @@ export interface BoundingBox {
   minLng: number;
   maxLng: number;
 }
+
+export type VehicleType = "citadine" | "berline" | "suv" | "utilitaire" | "moto";
+
+export interface UserPreferences {
+  preferredFuel: FuelType;
+  vehicleType: VehicleType;
+  tankSizeL: number;
+  onboardingCompletedAt: string | null;
+}
