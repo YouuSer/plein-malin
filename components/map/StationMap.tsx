@@ -16,14 +16,63 @@ interface StationMapProps {
   onStationClick?: (station: StationWithPrices) => void;
 }
 
-function getMarkerColor(price: number, allPrices: number[]): string {
-  if (allPrices.length === 0) return "#f59e0b";
-  const sorted = [...allPrices].sort((a, b) => a - b);
-  const p20 = sorted[Math.floor(sorted.length * 0.2)] ?? price;
-  const p80 = sorted[Math.floor(sorted.length * 0.8)] ?? price;
-  if (price <= p20) return "#35a9db";
-  if (price >= p80) return "#796fd8";
-  return "#5fc5bf";
+function quantile(sortedValues: number[], q: number): number | null {
+  if (sortedValues.length === 0) return null;
+  const clampedQ = Math.min(1, Math.max(0, q));
+  const index = Math.floor(clampedQ * (sortedValues.length - 1));
+  return sortedValues[index] ?? null;
+}
+
+function mixHex(base: string, target: string, ratio: number): string {
+  const mix = Math.min(1, Math.max(0, ratio));
+  const baseInt = parseInt(base.slice(1), 16);
+  const targetInt = parseInt(target.slice(1), 16);
+
+  const br = (baseInt >> 16) & 255;
+  const bg = (baseInt >> 8) & 255;
+  const bb = baseInt & 255;
+
+  const tr = (targetInt >> 16) & 255;
+  const tg = (targetInt >> 8) & 255;
+  const tb = targetInt & 255;
+
+  const r = Math.round(br + (tr - br) * mix);
+  const g = Math.round(bg + (tg - bg) * mix);
+  const b = Math.round(bb + (tb - bb) * mix);
+
+  return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+}
+
+function getMarkerColor(price: number, sortedPrices: number[]): string {
+  if (sortedPrices.length === 0) return "#0f9a74";
+  if (sortedPrices.length === 1) return "#0f9a74";
+
+  const lowerBound = quantile(sortedPrices, 0.1) ?? sortedPrices[0];
+  const upperBound = quantile(sortedPrices, 0.9) ?? sortedPrices[sortedPrices.length - 1];
+  const denom = upperBound - lowerBound;
+
+  const normalized =
+    denom <= 0
+      ? 0.5
+      : Math.min(1, Math.max(0, (price - lowerBound) / denom));
+
+  const colorStops = [
+    { pos: 0, color: "#0f9a74" },
+    { pos: 0.4, color: "#14b8a6" },
+    { pos: 0.72, color: "#f59e0b" },
+    { pos: 1, color: "#d84c4c" },
+  ] as const;
+
+  for (let i = 1; i < colorStops.length; i++) {
+    const previous = colorStops[i - 1];
+    const current = colorStops[i];
+    if (normalized <= current.pos) {
+      const segment = (normalized - previous.pos) / (current.pos - previous.pos);
+      return mixHex(previous.color, current.color, segment);
+    }
+  }
+
+  return colorStops[colorStops.length - 1].color;
 }
 
 function isCheapest(price: number, allPrices: number[]): boolean {
@@ -57,6 +106,7 @@ export function StationMap({
         .filter((p): p is number => p !== null),
     [stations, selectedFuel]
   );
+  const sortedAllPrices = useMemo(() => [...allPrices].sort((a, b) => a - b), [allPrices]);
 
   // Build supercluster index
   useEffect(() => {
@@ -73,7 +123,7 @@ export function StationMap({
         properties: {
           stationIndex: i,
           price: mainPrice.price,
-          color: getMarkerColor(mainPrice.price, allPrices),
+          color: getMarkerColor(mainPrice.price, sortedAllPrices),
           cheapest: isCheapest(mainPrice.price, allPrices),
         },
       });
@@ -86,12 +136,13 @@ export function StationMap({
         priceSum: props.price,
         priceCount: 1,
         minPrice: props.price,
-        color: props.color,
+        maxPrice: props.price,
       }),
       reduce: (acc, props) => {
         acc.priceSum += props.priceSum;
         acc.priceCount += props.priceCount;
         acc.minPrice = Math.min(acc.minPrice, props.minPrice);
+        acc.maxPrice = Math.max(acc.maxPrice, props.maxPrice);
       },
     });
 
@@ -99,7 +150,7 @@ export function StationMap({
     clusterIndex.current = index;
 
     renderMarkers();
-  }, [stations, selectedFuel, allPrices]);
+  }, [stations, selectedFuel, allPrices, sortedAllPrices]);
 
   // Initialize map
   useEffect(() => {
@@ -181,6 +232,11 @@ export function StationMap({
       if (props.cluster) {
         const count = props.point_count;
         const minPrice = props.minPrice;
+        const avgPrice = props.priceCount > 0 ? props.priceSum / props.priceCount : minPrice;
+        const medianProxy = (props.minPrice + props.maxPrice) / 2;
+        const clusterPriceAnchor = (minPrice + avgPrice + medianProxy) / 3;
+        const clusterColor = getMarkerColor(clusterPriceAnchor, sortedAllPrices);
+        const clusterColorLight = mixHex(clusterColor, "#ffffff", 0.24);
         const size = Math.min(48 + count * 0.3, 68);
 
         const el = document.createElement("div");
@@ -193,10 +249,10 @@ export function StationMap({
           width: ${size}px;
           height: ${size}px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #74d3c6, #7ec4e3);
+          background: linear-gradient(135deg, ${clusterColor}, ${clusterColorLight});
           color: white;
           border: 3px solid white;
-          box-shadow: 0 6px 16px rgba(87, 170, 197, 0.34);
+          box-shadow: 0 6px 16px rgba(24, 34, 48, 0.26);
           font-family: inherit;
           line-height: 1;
           transition: transform 0.2s;
@@ -263,7 +319,7 @@ export function StationMap({
         markers.current.push(marker);
       }
     }
-  }, [stations, onStationClick]);
+  }, [stations, onStationClick, sortedAllPrices]);
 
   const flyToUser = useCallback(() => {
     if (!map.current || isDefaultPosition) return;

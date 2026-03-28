@@ -7,6 +7,8 @@ import type { GeoPosition } from "@/lib/types";
 interface FuelFilterState {
   selectedFuel: FuelType;
   setSelectedFuel: (fuel: FuelType) => void;
+  radiusKm: number;
+  setRadiusKm: (radiusKm: number) => void;
   searchPosition: GeoPosition | null;
   searchLabel: string | null;
   setSearch: (pos: GeoPosition, label: string) => void;
@@ -17,6 +19,7 @@ const FuelFilterContext = createContext<FuelFilterState | null>(null);
 
 export function FuelFilterProvider({ children }: { children: ReactNode }) {
   const [selectedFuel, setSelectedFuel] = useState<FuelType>(DEFAULT_FUEL);
+  const [radiusKm, setRadiusKm] = useState<number>(15);
   const [searchPosition, setSearchPosition] = useState<GeoPosition | null>(null);
   const [searchLabel, setSearchLabel] = useState<string | null>(null);
 
@@ -35,6 +38,8 @@ export function FuelFilterProvider({ children }: { children: ReactNode }) {
       value={{
         selectedFuel,
         setSelectedFuel,
+        radiusKm,
+        setRadiusKm,
         searchPosition,
         searchLabel,
         setSearch,

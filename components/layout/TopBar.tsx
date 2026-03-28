@@ -78,7 +78,7 @@ export function TopBar({ onMenuClick }: TopBarProps) {
       </div>
 
       {showFuelFilter && (
-        <div className="hidden xl:block shrink-0">
+        <div className="hidden lg:block shrink-0">
           <FilterChips selected={selectedFuel} onChange={setSelectedFuel} tone="topbar" />
         </div>
       )}
