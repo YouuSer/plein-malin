@@ -15,8 +15,10 @@ export const VEHICLE_TANK_PRESETS: Record<VehicleType, number> = {
   citadine: 42,
   berline: 55,
   suv: 65,
+  monospace: 72,
   utilitaire: 80,
   moto: 20,
+  scooter: 8,
 };
 
 const DEFAULT_VEHICLE: VehicleType = "berline";
@@ -29,7 +31,7 @@ export const DEFAULT_USER_PREFERENCES: UserPreferences = {
 };
 
 function clampTankSize(value: number): number {
-  return Math.min(140, Math.max(15, Math.round(value)));
+  return Math.min(140, Math.max(5, Math.round(value)));
 }
 
 function sanitizePreferredFuel(value: unknown): FuelType {
@@ -44,8 +46,10 @@ function sanitizeVehicleType(value: unknown): VehicleType {
     value === "citadine" ||
     value === "berline" ||
     value === "suv" ||
+    value === "monospace" ||
     value === "utilitaire" ||
-    value === "moto"
+    value === "moto" ||
+    value === "scooter"
   ) {
     return value;
   }

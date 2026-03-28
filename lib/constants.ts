@@ -1,10 +1,46 @@
 export const FUEL_TYPES = {
-  e10: { label: "E10", color: "#0d9f6e", shortLabel: "E10" },
-  sp95: { label: "SP95", color: "#06b6d4", shortLabel: "95" },
-  sp98: { label: "SP98", color: "#8b5cf6", shortLabel: "98" },
-  gazole: { label: "Gazole", color: "#475569", shortLabel: "GOil" },
-  e85: { label: "E85", color: "#10b981", shortLabel: "E85" },
-  gplc: { label: "GPLc", color: "#f59e0b", shortLabel: "GPL" },
+  e10: {
+    label: "E10",
+    color: "#55b947",
+    shortLabel: "E10",
+    euCode: "E10",
+    euLabel: "Sans plomb 95",
+  },
+  sp95: {
+    label: "SP95",
+    color: "#0e7c36",
+    shortLabel: "E5",
+    euCode: "E5",
+    euLabel: "Sans plomb 95",
+  },
+  sp98: {
+    label: "SP98",
+    color: "#0f9a74",
+    shortLabel: "E5/98",
+    euCode: "E5",
+    euLabel: "Sans plomb 98",
+  },
+  gazole: {
+    label: "Gazole",
+    color: "#e5d61c",
+    shortLabel: "B7",
+    euCode: "B7",
+    euLabel: "Diesel",
+  },
+  e85: {
+    label: "E85",
+    color: "#31bee3",
+    shortLabel: "E85",
+    euCode: "E85",
+    euLabel: "Superethanol",
+  },
+  gplc: {
+    label: "GPLc",
+    color: "#1f7ab5",
+    shortLabel: "LPG",
+    euCode: "LPG",
+    euLabel: "Gaz de petrole liquefie",
+  },
 } as const;
 
 export type FuelType = keyof typeof FUEL_TYPES;

@@ -42,7 +42,14 @@ export interface BoundingBox {
   maxLng: number;
 }
 
-export type VehicleType = "citadine" | "berline" | "suv" | "utilitaire" | "moto";
+export type VehicleType =
+  | "citadine"
+  | "berline"
+  | "suv"
+  | "monospace"
+  | "utilitaire"
+  | "moto"
+  | "scooter";
 
 export interface UserPreferences {
   preferredFuel: FuelType;
