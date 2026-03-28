@@ -1,10 +1,45 @@
-import { MobileNav } from "@/components/layout/MobileNav";
+"use client";
+
+import { useState, useCallback } from "react";
+import { Sidebar } from "@/components/layout/Sidebar";
+import { TopBar } from "@/components/layout/TopBar";
+import { MobileSidebarDrawer } from "@/components/layout/MobileSidebarDrawer";
+import { FuelFilterProvider } from "@/contexts/FuelFilterContext";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
+
+  const handleToggleSidebar = useCallback(() => {
+    setSidebarCollapsed((prev) => !prev);
+  }, []);
+
+  const handleCloseMobileDrawer = useCallback(() => {
+    setMobileDrawerOpen(false);
+  }, []);
+
   return (
-    <div className="flex flex-col h-dvh">
-      <main className="flex-1 relative overflow-hidden">{children}</main>
-      <MobileNav />
-    </div>
+    <FuelFilterProvider>
+      <div className="flex h-dvh flex-col overflow-hidden">
+        <TopBar onMenuClick={() => setMobileDrawerOpen(true)} />
+
+        <div className="flex min-h-0 flex-1 overflow-hidden">
+          <Sidebar
+            collapsed={sidebarCollapsed}
+            onToggle={handleToggleSidebar}
+            className="hidden lg:flex"
+          />
+
+          <MobileSidebarDrawer
+            open={mobileDrawerOpen}
+            onClose={handleCloseMobileDrawer}
+          />
+
+          <main className="flex-1 overflow-hidden" style={{ background: "var(--bg-page)" }}>
+            {children}
+          </main>
+        </div>
+      </div>
+    </FuelFilterProvider>
   );
 }
