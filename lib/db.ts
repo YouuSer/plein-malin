@@ -24,16 +24,11 @@ function resolveDbConfig() {
   const authToken = normalizeEnvValue(process.env.TURSO_AUTH_TOKEN);
   const isProduction = process.env.NODE_ENV === "production";
 
-  if (!isProduction) {
+  // In dev or when no remote URL is configured, use local SQLite
+  if (!isProduction || !url || url.startsWith("file:")) {
     return { url: url ?? LOCAL_DB_URL, authToken };
   }
 
-  if (!url) {
-    throw new Error("TURSO_DATABASE_URL is required in production.");
-  }
-  if (url.startsWith("file:")) {
-    throw new Error("TURSO_DATABASE_URL must target Turso in production.");
-  }
   if (!authToken) {
     throw new Error("TURSO_AUTH_TOKEN is required in production.");
   }
